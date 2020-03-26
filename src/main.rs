@@ -1,10 +1,9 @@
-use std::io::stdin;
-
-use md5::Digest;
+use std::io::{BufRead, stdin};
+use std::time::Instant;
 
 struct Text {
     hashes: Vec<[u8; 128]>,
-    queries: Vec<(u64, u64)>,
+    queries: Vec<(usize, usize)>,
 }
 
 fn update_sh(hash: &[u8; 16], sh: &mut [i64; 128]) {
@@ -53,17 +52,37 @@ fn simhash(line: &str) -> [u8; 128] {
 }
 
 fn process_input(text: &mut Text) {
-    let mut line = String::new();
-    match stdin().read_line(&mut line) {
-        Ok(_) => {
-            text.hashes.append(&mut vec![simhash(&line)])
-        }
-        Err(err) => {
-            panic!(err)
+    let mut counter: usize = 0;
+    let mut n: usize = 0;
+    let mut q: usize = 0;
+    for res in stdin().lock().lines() {
+        match res {
+            Ok(line) => {
+                if counter == 0 {
+                    n = line.parse::<usize>().unwrap();
+                } else if counter <= n {
+                    text.hashes.append(&mut vec![simhash(&line)]);
+                } else if counter == n + 1 {
+                    q = line.parse::<usize>().unwrap();
+                } else {
+                    let split: Vec<&str> = line.split(' ').collect();
+                    let i = split[0].parse::<usize>().unwrap();
+                    let k = split[1].parse::<usize>().unwrap();
+                    text.queries.append(&mut vec![(i, k)])
+                }
+                counter += 1;
+            }
+            Err(err) => {
+                panic!(err);
+            }
         }
     }
 }
 
 fn main() {
-    println!("simhash: {:x}", bin_to_int(&simhash("fakultet elektrotehnike i racunarstva")))
+    // println!("simhash: {:x}", bin_to_int(&simhash("fakultet elektrotehnike i racunarstva")))
+    let mut txt = Text { queries: Vec::new(), hashes: Vec::new() };
+    let start = Instant::now();
+    process_input(&mut txt);
+    println!("process_input done in {:?}", start.elapsed())
 }
