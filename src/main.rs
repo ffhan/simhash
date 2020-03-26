@@ -2,7 +2,7 @@ use std::io::{BufRead, stdin};
 use std::time::Instant;
 
 struct Text {
-    hashes: Vec<[u8; 128]>,
+    hashes: Vec<i128>,
     queries: Vec<(usize, usize)>,
 }
 
@@ -31,9 +31,9 @@ fn bin_to_int(sh: &[u8; 128]) -> i128 {
     return result;
 }
 
-fn simhash(line: &str) -> [u8; 128] {
+fn simhash(line: &str) -> i128 {
     let mut sh: [i64; 128] = [0; 128];
-    let mut result: [u8; 128] = [0; 128];
+    let mut result: i128 = 0;
     let split: Vec<&str> = line.split(' ').collect();
     for i in 0..split.len() {
         let word = split[i];
@@ -41,11 +41,10 @@ fn simhash(line: &str) -> [u8; 128] {
         update_sh(&hash, &mut sh);
     }
     for i in 0..sh.len() {
-        let index = sh.len() - 1 - i;
-        if sh[index] >= 0 {
-            result[index] = 1;
+        if sh[i] >= 0 {
+            result = (result << 1) | 1;
         } else {
-            result[index] = 0;
+            result = (result << 1) | 0;
         }
     };
     return result;
@@ -80,7 +79,7 @@ fn process_input(text: &mut Text) {
 }
 
 fn main() {
-    // println!("simhash: {:x}", bin_to_int(&simhash("fakultet elektrotehnike i racunarstva")))
+    // println!("simhash: {:x}", simhash("fakultet elektrotehnike i racunarstva"))
     let mut txt = Text { queries: Vec::new(), hashes: Vec::new() };
     let start = Instant::now();
     process_input(&mut txt);
