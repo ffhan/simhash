@@ -172,7 +172,7 @@ fn order<'a>(i1: &'a usize, i2: &'a usize) -> (&'a usize, &'a usize) {
 }
 
 fn main() {
-    // println!("simhash: {:x}", simhash("fakultet elektrotehnike i racunarstva"))
+    println!("simhash: {:x}", simhash("fakultet elektrotehnike i racunarstva"));
     let mut txt = Text { queries: Vec::new(), hashes: Vec::new(), cache: HashMap::new() };
     let start = Instant::now();
     process_input(&mut txt);
